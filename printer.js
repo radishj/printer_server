@@ -112,11 +112,11 @@ async function print (data) {
   }
   let printer = new ThermalPrinter({
     type: Types.EPSON,  // 'star' or 'epson'
-    interface: process.argv[2],//'tcp://192.168.0.60',
+    interface: 'tcp://'+ process.argv[2],//'tcp://192.168.0.60',
     options: {
-      timeout: 1000
+      timeout: 2000
     },
-    width: 60,                         // Number of characters in one line - default: 48
+    width: 48,                         // Number of characters in one line - default: 48
     characterSet: 'PC437_USA',          // Character set - default: SLOVENIA
     removeSpecialCharacters: false,    // Removes special characters - default: false
     lineCharacter: "-",                // Use custom character for drawing lines - default: -
