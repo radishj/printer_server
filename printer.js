@@ -44,7 +44,7 @@ function sendCommand(printer, command){
             var left='';
             var right='';
             if(command.left) left=command.left;
-            if(command.right) left=command.right;
+            if(command.right) right=command.right;
             printer.leftRight(left, right);
             res = {result:true};
             break;
