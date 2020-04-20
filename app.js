@@ -30,3 +30,4 @@ http.createServer((request, response) => {
 }).listen(8081);
 console.log("printer address:",process.argv[2]);
 console.log('Listen on: '+8081);
+printer.print([{"orderID":"Baba Ghannouj Restaurant & Catering"},{"type":"println","text":"Baba Ghannouj Restaurant & Catering"},{"type":"println","text":"Printer connect success."}]);
