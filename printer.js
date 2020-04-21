@@ -100,8 +100,8 @@ async function print (data) {
   var newOrderID = data[0].orderID;
   if(oldOrderID == newOrderID)
   {
-    console.log("Duplicate print declined. ID:"+newOrderID);
-    return;
+    //console.log("Duplicate print declined. ID:"+newOrderID);
+    //return;
   }
   else
   {
