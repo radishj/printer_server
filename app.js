@@ -51,6 +51,6 @@ http.createServer((request, response) => {
 }).listen(8081);
 console.log("printer address:",process.argv[2]," version: 1.0");
 console.log('Listen on: '+8081);
-//printer.print([["println","Baba Ghannouj Restaurant & Catering"],["println","Printer connect success."]]);
+printer.print([["println","Baba Ghannouj Restaurant & Catering"],["println","Printer connect success."]]);
 printer.checkServer();
 //printer.printOrder('9Q6fXPFHfodDazBad9dw');
