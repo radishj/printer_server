@@ -1,5 +1,6 @@
 //start();
-let printer = require('./printer');
+let restName = "Cafe Meridian & Catering Company";
+let printer = require('./src/printer');
 const http = require('http');
 function sleep(milliseconds) {
   const date = Date.now();
@@ -17,15 +18,14 @@ http.createServer((request, response) => {
       body += data;
     })
     request.on('end', function() {
-      //console.log('Got Body:',body);
+      console.log('Got Body:',body);
       var data = JSON.parse(body);
       if(data[0].orderID){
-        printer.printOrder(data[0].orderID);
+        //printer.printOrder(data[0].orderID);
       }
       else{
         console.log("received one order, but no orderID in it!");
       }
-      sleep(500);
       //console.log(JSON.stringify(data,null,'   '));
       /*
       var newTime = new Date().toTimeString();
@@ -51,5 +51,6 @@ http.createServer((request, response) => {
 }).listen(8081);
 console.log("printer address:",process.argv[2]," version: 1.0");
 console.log('Listen on: '+8081);
-printer.print([["println","Baba Ghannouj Restaurant & Catering"],["println","Printer connect success."]]);
+//printer.print([["println","Baba Ghannouj Restaurant & Catering"],["println","Printer connect success."]]);
+printer.checkServer();
 //printer.printOrder('9Q6fXPFHfodDazBad9dw');

@@ -1,6 +1,6 @@
 const ThermalPrinter = require("node-thermal-printer").printer;
 const Types = require("node-thermal-printer").types;
-let db = require('./src/fb');
+let db = require('./fb');
 
 function sendCommand(printer, command){
     //console.log('command:',command);
@@ -246,5 +246,65 @@ function printOrder(orderID){
     });
 }
 
+var fs = require('fs');
+var restName = "Baba Ghannouj Restaurant & Catering";
+async function checkServer()
+{
+    var d = new Date();
+    const todayStr = d.toLocaleDateString('en-US');
+    fs.appendFile('todayOrders.txt', '', function (err) {
+    if (err) throw err;
+        console.log('Saved!');
+    });
+    ordersPrinted = {};
+    fs.readFile('todayOrders.txt', 'utf8', function(err, data) {
+        if (err) throw err;
+        //console.log('readdata:',data);
+        var lines = data.split('\n');
+        if(lines.length==0 || lines[0].trim()!==todayStr){
+            fs.writeFile('todayOrders.txt', todayStr, function (err) {
+                if (err) throw err;
+                console.log('Cleared todayOrders.txt!');
+            });
+        }
+        else{
+            for(var i=1; i<lines.length; i++){
+                ordersPrinted[lines[i].trim()]=0;
+            }
+        }
+    });
+    var todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
+
+    while(true){
+        db.collection("printerOrders")
+            .where("restName", "==", restName)
+            .where("orderTime", ">=", todayStart)
+        .get()
+        .then(function(querySnapshot) {
+            var appendData="";
+            querySnapshot.forEach(function(doc) {
+                // doc.data() is never undefined for query doc snapshots
+                if(!ordersPrinted.hasOwnProperty(doc.id)){
+                    printOrder(doc.id);
+                    console.log(doc.id);
+                    ordersPrinted[doc.id]=0;
+                    appendData+='\n'+doc.id;
+                }
+            });
+            if(appendData!==""){
+                fs.appendFile('todayOrders.txt', appendData, function (err) {
+                    if (err) throw err;
+                    console.log('Updated!');
+                });
+            }
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+        await new Promise(r => setTimeout(r, 1000));
+    }
+}
 module.exports.print = print;
 module.exports.printOrder = printOrder;
+module.exports.checkServer = checkServer;
