@@ -181,16 +181,27 @@ function printOrder(orderID){
         pData.push(["align","center"]);
         order.dishData.mainItems.forEach(dish => {
             var optionsTotal=0;
-            var optionsArr=[['Main item', dish.attributeName, dish.price.toFixed(2)+' x '+dish.count]];
+            var optionsArr="";
+            if(dish.count==1)
+                optionsArr=[['Main item', dish.attributeName, dish.price.toFixed(2)]];
+            else
+                optionsArr=[['Main item', dish.attributeName, dish.price.toFixed(2)+' x '+dish.count]];
             var optionName="";
             dish.subItems.forEach(option => {
                 optionsTotal+=option.price*option.count;
                 if(optionName!==option.optionName){
-                    optionsArr.push([option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]);
+                    if(option.count==1)
+                        optionsArr.push([option.optionName,option.name, option.price.toFixed(2)]);
+                    else
+                        optionsArr.push([option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]);
                     optionName=option.optionName;
                 }
-                else
-                    optionsArr.push(['',option.name, option.price.toFixed(2)+' x '+option.count])
+                else{
+                    if(option.count==1)
+                        optionsArr.push(['',option.name, option.price.toFixed(2)])
+                    else
+                        optionsArr.push(['',option.name, option.price.toFixed(2)+' x '+option.count])
+                    }
             });
             var price = dish.price * dish.count + optionsTotal;
             total += price;
