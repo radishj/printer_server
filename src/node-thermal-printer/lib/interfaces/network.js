@@ -1,4 +1,4 @@
-const Interface = require("./interface");
+const Interface = require("interface");
 const Net = require("net");
 
 
