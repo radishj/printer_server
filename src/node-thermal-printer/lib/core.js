@@ -72,7 +72,7 @@ class ThermalPrinter {
   }
 
   setWidth(width) {
-    this.config.width = width;console.log('width changed to: ', width);
+    this.config.width = width;//console.log('width changed to: ', width);
   }
 
   getText() {

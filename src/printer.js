@@ -146,7 +146,7 @@ async function print (data) {
         type: Types.EPSON,  // 'star' or 'epson'
         interface: 'tcp://'+ process.argv[2],//'tcp://192.168.0.60',
         options: {
-          timeout: 2000
+          timeout: 5000
         },
         width: 48,                         // Number of characters in one line - default: 48
         characterSet: 'PC437_USA',          // Character set - default: SLOVENIA
