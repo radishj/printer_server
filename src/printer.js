@@ -32,6 +32,10 @@ function sendCommand(printer, command){
             printer.setTypeFontB();
             res = {result:true};
             break;
+        case 'set width':
+            printer.setWidth(command[1]);
+            res = {result:true};
+            break;
         case 'align':
             if(command[1]==='center')
                 printer.alignCenter();
@@ -71,15 +75,47 @@ function sendCommand(printer, command){
                         for(i=0; i<command[3].length; i++)
                         {
                             data=[];
-                            for(j=0; j<3; j++)
-                            {
+                            var str = "";
+                            if(i==0){ //only the first row has first column data
+                                //console.log('before:',command[3][i][0],';',command[3][i][0].length,';',command[2][0]);
+                                command[3][i][0] = command[4]+command[3][i][0];
+                                command[3][i][0] = command[3][i][0].substr(0,command[2][0]-1)+':';
+                                if(command[3][i][0].trim()===":") command[3][i][0]=" ";
+                                //console.log('after:',command[3][i][0],';');
+                                if(command[3][i][0].length<command[2][0]){
+                                    length2col=command[2][0]+command[2][1];
+                                    command[2][0] = command[3][i][0].length;
+                                    command[2][1] = length2col-command[3][i][0].length;
+                                    //console.log('afteraaaa:',command[2][0],';',command[2][1],';');
+                                }
+                            }
+                            for(j=0; j<3; j++){
+                                if(j==0)
+                                    str = command[3][i][j];
+                                else
+                                    str = " "+command[3][i][j];
+                                str = str.substr(0,command[2][j]);
                                 data.push({
-                                    text:command[3][i][j],
+                                    text:str,
                                     align:command[1][j],
-                                    width:command[2][j]
+                                    cols:command[2][j]
                                 })
+                                /*if(j==0)
+                                    data.push({
+                                        text:str,
+                                        align:command[1][j],
+                                        cols:command[2][j],
+                                        bold:true
+                                    })
+                                else
+                                    data.push({
+                                        text:str,
+                                        align:command[1][j],
+                                        cols:command[2][j]
+                                    })*/
                             };
                             printer.tableCustom(data);
+                            //console.log("1111111111111111111122",JSON.stringify(data));
                         }
                         //console.log(JSON.stringify(data)+"1111111111111111111111\n");
                         res = {result:true};
@@ -133,7 +169,7 @@ async function print (data) {
   });
   printer.cut();
   //printer.openCashDrawer();
-
+  //console.log(printer.getText());
   try {
     var res = await printer.execute();
     console.log("Printed:",res);
@@ -178,30 +214,31 @@ function printOrder(orderID){
         pData.push(["println","Order Details:"]);
         var total=0;
         //console.log('aaaaaaaaaaaaa',order)
-        pData.push(["align","center"]);
+        //pData.push(["align","center"]);
         order.dishData.mainItems.forEach(dish => {
             var optionsTotal=0;
             var optionsArr="";
             if(dish.count==1)
-                optionsArr=[['Main item', dish.attributeName, dish.price.toFixed(2)]];
+                optionsArr=[[['Main item', dish.attributeName, dish.price.toFixed(2)]]];
             else
-                optionsArr=[['Main item', dish.attributeName, dish.price.toFixed(2)+' x '+dish.count]];
-            var optionName="";
+                optionsArr=[[['Main item', dish.attributeName, dish.price.toFixed(2)+' x '+dish.count]]];
+            var optionName="      ";
+            var optionNameCount = 1;
             dish.subItems.forEach(option => {
                 optionsTotal+=option.price*option.count;
                 if(optionName!==option.optionName){
                     if(option.count==1)
-                        optionsArr.push([option.optionName,option.name, option.price.toFixed(2)]);
+                        optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)]]);
                     else
-                        optionsArr.push([option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]);
+                        optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]]);
                     optionName=option.optionName;
                 }
                 else{
-                    if(option.count==1)
-                        optionsArr.push(['',option.name, option.price.toFixed(2)])
+                    if(option.count==1){console.log("option.name, option.price:",option.name, option.price);
+                        optionsArr[optionNameCount].push(['',option.name, option.price.toFixed(2)])}
                     else
-                        optionsArr.push(['',option.name, option.price.toFixed(2)+' x '+option.count])
-                    }
+                        optionsArr[optionNameCount].push(['',option.name, option.price.toFixed(2)+' x '+option.count])
+                }
             });
             var price = dish.price * dish.count + optionsTotal;
             total += price;
@@ -210,11 +247,17 @@ function printOrder(orderID){
             pData.push(["set font small"]);
             var mainItem = [""]
             //console.log('bbbbbbbbbbbbbb',optionsArr,'cccccccccccccccc');
-            pData.push(["table3c", 
-                ['LEFT','LEFT','RIGHT'],
-                [0.25,0.5,0.2],
-                optionsArr
-            ]);   
+            pData.push(["set width",60]);
+            var leadingSpace='   ';
+            for(var i=0;i<optionsArr.length;i++){
+                pData.push(["table3c", 
+                    ['LEFT','LEFT','RIGHT'],
+                    [23,23,10],
+                    optionsArr[i],
+                    '   ',
+                ]); 
+            }
+            pData.push(["set width",48]);  
         });
         pData.push(["set font big"]);
         pData.push(["align","LEFT"]);
@@ -246,7 +289,7 @@ function printOrder(orderID){
         pData.push(["println",restName]);
         pData.push(["println",order.address]);
         print(pData);
-        //console.log("Document data:", JSON.stringify(order, null, "   "));
+        //console.log("Document data:", JSON.stringify(pData, null, "   "));
 
     } else {
         // doc.data() will be undefined in this case

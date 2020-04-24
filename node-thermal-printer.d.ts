@@ -59,6 +59,13 @@ declare class ThermalPrinter {
   getWidth(): number;
 
   /**
+   * Set number of characters in one line
+   * @param Number number
+  */
+ setWidth(width: number): void;
+
+
+  /**
    * Get printing buffer in string
    * @returns String
   */
