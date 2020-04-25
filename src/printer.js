@@ -222,15 +222,22 @@ function printOrder(orderID){
                 optionsArr=[[['Main item', dish.attributeName, dish.price.toFixed(2)]]];
             else
                 optionsArr=[[['Main item', dish.attributeName, dish.price.toFixed(2)+' x '+dish.count]]];
-            var optionName="      ";
+            var optionName="        ";
             var optionNameCount = 1;
             dish.subItems.forEach(option => {
                 optionsTotal+=option.price*option.count;
-                if(optionName!==option.optionName){
+
+                if(optionName!=option.optionName){
                     if(option.count==1)
-                        optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)]]);
+                        if(option.optionName.trim()=="")
+                            optionsArr.push([[option.name, option.optionName, option.price.toFixed(2)]]);// will print like 'name:', otherwise first field will be given extra space
+                        else
+                            optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)]]);
                     else
-                        optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]]);
+                        if(option.optionName.trim()=="")
+                            optionsArr.push([[option.name, option.optionName, option.price.toFixed(2)+' x '+option.count]]);// will print like 'name:', otherwise first field will be given extra space
+                        else
+                            optionsArr.push([[option.optionName,option.name, option.price.toFixed(2)+' x '+option.count]]);
                     optionName=option.optionName;
                 }
                 else{
